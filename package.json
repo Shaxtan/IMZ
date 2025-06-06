@@ -10,8 +10,17 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/checkbox": "^0.5.20",
+    "@react-native-community/datetimepicker": "^8.4.1",
+    "@react-native-picker/picker": "^2.11.0",
+    "@react-navigation/native": "^7.1.10",
     "react": "19.0.0",
-    "react-native": "0.79.2"
+    "react-native": "0.79.2",
+    "react-native-maps": "^1.23.8",
+    "react-native-paper": "^5.14.5",
+    "react-native-safe-area-context": "^5.4.1",
+    "react-native-screens": "^4.11.1",
+    "react-native-vector-icons": "^10.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
