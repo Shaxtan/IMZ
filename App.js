@@ -2,320 +2,213 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
+  TextInput,
   Image,
-  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const ActionCard = ({ accountName, vehicleNumber, tripId, imei }) => {
-  const [showActions, setShowActions] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleActions = () => setShowActions(!showActions);
-  const toggleExpanded = () => setExpanded(!expanded);
-
-  const actionIcons = [
-    { name: 'One', icon: require('./assets/one.png') },
-    { name: 'Two', icon: require('./assets/two.png') },
-    { name: 'Three', icon: require('./assets/three.png') },
-    { name: 'Four', icon: require('./assets/four.png') },
-    { name: 'Five', icon: require('./assets/five.png') },
-    { name: 'Six', icon: require('./assets/six.png') },
-  ];
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View style={styles.card}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>{accountName}</Text>
-        <Text style={styles.subText}>Vehicle No.: {vehicleNumber}</Text>
-        <Text style={styles.subText}>Trip ID: {tripId}</Text>
-        <Text style={styles.subText}>IMEI: {imei}</Text>
-      </View>
+    <View style={styles.container}>
+      {/* Top right shape */}
+      <View style={styles.topRightShape} />
 
-      <TouchableOpacity onPress={toggleActions} style={styles.actionsBtn}>
-        <Text style={styles.actionsText}>
-          {showActions ? '▲ Hide Actions' : '▼ Actions'}
-        </Text>
-      </TouchableOpacity>
+      {/* Logo */}
+      <Image
+        source={require('./assets/imz-logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
 
-      {showActions && (
-        <View style={styles.iconRow}>
-          {actionIcons.map((action, index) => (
-            <TouchableOpacity key={index} style={styles.iconButton}>
-              <Image source={action.icon} style={styles.iconImage} />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+      {/* Bottom and corner images */}
+      <Image
+        source={require('./assets/down.png')}
+        style={styles.bottomImage}
+        resizeMode="contain"
+      />
+      <Image
+        source={require('./assets/up.png')}
+        style={styles.cornerImage}
+        resizeMode="contain"
+      />
 
-      <TouchableOpacity onPress={toggleExpanded} style={styles.viewMoreBtn}>
-        <Text style={styles.viewMoreText}>
-          {expanded ? '▲ View Less' : '▼ View More'}
-        </Text>
-      </TouchableOpacity>
+      {/* Form box: Sign In to NEXT button */}
+      <View style={styles.formBox}>
+        {/* Heading */}
+        <Text style={styles.heading}>Sign In</Text>
 
-      {expanded && (
-        <View style={styles.expandedSection}>
-          <Text style={styles.info}>Driver: John Doe</Text>
-          <Text style={styles.info}>Route: Pune → Mumbai</Text>
-          <Text style={styles.info}>ETA: 14:35</Text>
-          <Text style={styles.info}>Load: Electronics</Text>
-        </View>
-      )}
-    </View>
-  );
-};
+        {/* Email Input */}
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          placeholderTextColor="#888"
+          value={email}
+          onChangeText={setEmail}
+        />
 
-const CardList = () => {
-  const allData = [...Array(25).keys()].map((i) => ({
-    id: i,
-    accountName: `Account ${i + 1}`,
-    vehicleNumber: `MH12AB${1000 + i}`,
-    tripId: `TRIP${i + 1}`,
-    imei: `IMEI${100000000000000 + i}`,
-  }));
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const totalPages = Math.ceil(allData.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const currentData = allData.slice(startIndex, startIndex + pageSize);
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handlePageSizeChange = (value) => {
-    setPageSize(value);
-    setCurrentPage(1); // Reset to first page on change
-  };
-
-  return (
-    <View style={styles.fullScreen}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.heading}>Active (On Going) Trip List</Text>
-
-        {/* Page Size Picker */}
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.dropdownLabel}>Entries per page:</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={pageSize}
-              onValueChange={handlePageSizeChange}
-              mode="dropdown"
-              style={styles.picker}
-              itemStyle={styles.pickerItem}
-            >
-              <Picker.Item label="5" value={5} />
-              <Picker.Item label="10" value={10} />
-              <Picker.Item label="15" value={15} />
-              <Picker.Item label="20" value={20} />
-            </Picker>
-          </View>
-        </View>
-
-        {/* Cards */}
-        {currentData.map((item) => (
-          <ActionCard
-            key={item.id}
-            accountName={item.accountName}
-            vehicleNumber={item.vehicleNumber}
-            tripId={item.tripId}
-            imei={item.imei}
+        {/* Password Input */}
+        <Text style={styles.label}>Password</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="********"
+            placeholderTextColor="#888"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
           />
-        ))}
-      </ScrollView>
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Icon
+              name={showPassword ? 'visibility' : 'visibility-off'}
+              size={22}
+              color="#888"
+            />
+          </TouchableOpacity>
+        </View>
 
-      {/* Pagination Controls */}
-      <View style={styles.pagination}>
-        <TouchableOpacity
-          onPress={handlePrev}
-          disabled={currentPage === 1}
-          style={styles.pageButton}
-        >
-          <Text
-            style={[
-              styles.pageButtonText,
-              currentPage === 1 && styles.disabledText,
-            ]}
-          >
-            ← Prev
-          </Text>
+        {/* Forget Password */}
+        <TouchableOpacity>
+          <Text style={styles.forgotText}>Forget Password ?</Text>
         </TouchableOpacity>
 
-        <Text style={styles.pageIndicator}>
-          Page {currentPage} of {totalPages}
-        </Text>
-
-        <TouchableOpacity
-          onPress={handleNext}
-          disabled={currentPage === totalPages}
-          style={styles.pageButton}
-        >
-          <Text
-            style={[
-              styles.pageButtonText,
-              currentPage === totalPages && styles.disabledText,
-            ]}
-          >
-            Next →
-          </Text>
+        {/* NEXT Button */}
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>NEXT</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Bottom left shape */}
+      <View style={styles.bottomLeftShape} />
     </View>
   );
-};
-
-export default CardList;
+}
 
 const styles = StyleSheet.create({
-  fullScreen: {
-    flex: 1,
-    backgroundColor: '#f1f5f9',
-  },
   container: {
-    padding: 16,
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  headerContainer: {
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  subText: {
-    fontSize: 13,
-    color: '#475569',
-  },
-  iconRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  iconButton: {
-    backgroundColor: '#f3f4f6',
-    padding: 10,
-    borderRadius: 12,
-    marginRight: 10,
-    elevation: 2,
-  },
-  iconImage: {
-    width: 28,
-    height: 28,
-  },
-  actionsBtn: {
-    marginTop: 10,
-    alignSelf: 'flex-start',
-  },
-  actionsText: {
-    color: '#10b981',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  viewMoreBtn: {
-    marginTop: 10,
-    alignSelf: 'flex-start',
-  },
-  viewMoreText: {
-    color: '#3b82f6',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  expandedSection: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  info: {
-    fontSize: 13,
-    color: '#334155',
-    marginBottom: 4,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12,
+    flex: 1,
+    paddingHorizontal: 30,
+    justifyContent: 'center',
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderColor: '#e2e8f0',
+    transform: [{ translateY: -40 }],  // keeps whole content shifted up if you want
   },
-  pageButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  logo: {
+    width: 190,
+    height: 140,
+    alignSelf: 'center',
+    marginBottom: 10,
+    transform: [{ translateY: -90 }],  // shift logo up
   },
-  pageButtonText: {
-    fontSize: 14,
+
+  bottomImage: {
+    width: 180,
+    height: 200,
+    position: 'absolute',
+    bottom: -40,
+    left: 0,
+    marginLeft: -50,
+    zIndex: 1,
+  },
+
+  cornerImage: {
+    width: 120,
+    height: 180,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    margin: 0,
+    zIndex: 10,
+  },
+
+  formBox: {
+backgroundColor: '#f7f9fc',
+    padding: 20,
+    marginTop:-75,
+    borderRadius: 12,
+    // Shadows for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    // Elevation for Android shadow
+    elevation: 3,
+  },
+
+  heading: {
+    fontSize: 24,
     fontWeight: '600',
-    color: '#3b82f6',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#000',
   },
-  disabledText: {
-    color: '#94a3b8',
-  },
-  pageIndicator: {
+
+  label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontWeight: '500',
+    marginBottom: 5,
+    color: '#333',
   },
-  dropdownContainer: {
+
+  input: {
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    fontSize: 14,
+    color: '#000',
+  },
+
+  passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    marginLeft: 180,
-    paddingHorizontal: 8,
-  },
-  dropdownLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginRight: 10,
-  },
-  pickerWrapper: {
-    width: 70,
-    height: 40,
-    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 8,
-    overflow: 'hidden',
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    marginBottom: 15,
   },
-  picker: {
-    width: '100%',
-    height: 40,
-    color: '#1e293b',
-  },
-  pickerItem: {
+
+  passwordInput: {
+    flex: 1,
+    height: 45,
     fontSize: 14,
-    height: 40,
-    color: '#1e293b',
+    color: '#000',
+  },
+
+  forgotText: {
+    color: '#007bff',
+    textAlign: 'right',
+    marginBottom: 25,
+    fontSize: 13,
+  },
+
+  button: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+
+  // If you want to add shapes like topRightShape and bottomLeftShape, add them here
+  topRightShape: {
+    // your styles here if needed
+  },
+
+  bottomLeftShape: {
+    // your styles here if needed
   },
 });
