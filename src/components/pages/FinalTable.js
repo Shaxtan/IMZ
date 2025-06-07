@@ -48,11 +48,20 @@ const ActionCard = ({ accountName, vehicleNumber, tripId, imei }) => {
         </View>
       )}
 
-      <TouchableOpacity onPress={toggleActions} style={styles.actionsBtn}>
-        <Text style={styles.actionsText}>
-          {showActions ? '▲ Hide Actions' : '▼ Actions'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+       
+
+        <TouchableOpacity onPress={toggleExpanded} style={styles.viewMoreBtn}>
+          <Text style={styles.viewMoreText}>
+            {expanded ? '▲ View Less' : '▼ View More'}
+          </Text>
+        </TouchableOpacity>
+         <TouchableOpacity onPress={toggleActions} style={styles.actionsBtn}>
+          <Text style={styles.actionsText}>
+            {showActions ? '▲ Hide Actions' : '▼ Actions'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {showActions && (
         <View style={styles.iconRow}>
@@ -63,12 +72,6 @@ const ActionCard = ({ accountName, vehicleNumber, tripId, imei }) => {
           ))}
         </View>
       )}
-
-      <TouchableOpacity onPress={toggleExpanded} style={styles.viewMoreBtn}>
-        <Text style={styles.viewMoreText}>
-          {expanded ? '▲ View Less' : '▼ View More'}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -104,7 +107,6 @@ const CardList = () => {
 
   return (
     <View style={styles.fullScreen}>
-      {/* Header with logo and menu */}
       <View style={styles.headerBar}>
         <Image source={require('./assets/imz-logo.png')} style={styles.logoImage} />
         <TouchableOpacity onPress={() => console.log('Menu pressed')}>
@@ -289,9 +291,15 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
   },
-  actionsBtn: {
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 16,
     marginTop: 10,
-    alignSelf: 'flex-start',
+  },
+  actionsBtn: {
+    paddingVertical: 4,
   },
   actionsText: {
     color: '#10b981',
@@ -299,8 +307,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   viewMoreBtn: {
-    marginTop: 10,
-    alignSelf: 'flex-start',
+    paddingVertical: 4,
   },
   viewMoreText: {
     color: '#3b82f6',
