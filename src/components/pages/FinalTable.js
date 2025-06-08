@@ -53,7 +53,7 @@ const ActionCard = ({ accountName, vehicleNumber, tripId, imei }) => {
 
         <TouchableOpacity onPress={toggleExpanded} style={styles.viewMoreBtn}>
           <Text style={styles.viewMoreText}>
-            {expanded ? '▲ View Less' : '▼ View More'}
+            {expanded ? '▼ View Less' : '▲ View More'}
           </Text>
         </TouchableOpacity>
          <TouchableOpacity onPress={toggleActions} style={styles.actionsBtn}>
