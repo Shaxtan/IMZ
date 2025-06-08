@@ -88,14 +88,13 @@ export default function App() {
 
   const handlePageSizeChange = (value) => {
     setPageSize(value);
-    setPage(1); // Reset to first page
+    setPage(1); 
   };
 
   return (
     <SafeAreaView style={styles.fullScreen}>
       
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Top Row: Menu and Dropdown */}
        
 
         <Text style={styles.heading}>Alert Log</Text>
