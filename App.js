@@ -1,300 +1,277 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  SafeAreaView,
-  ScrollView,
+  Text,
+  Image,
+  Platform,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {
+  Button,
+  Menu,
+  Provider as PaperProvider,
+} from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AlertCard = ({ data }) => {
-  const [expanded, setExpanded] = useState(false);
+const AlertLogsScreen = () => {
+  const [account, setAccount] = useState('');
+  const [vehicle, setVehicle] = useState('');
+  const [alertType, setAlertType] = useState('');
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showVehicleMenu, setShowVehicleMenu] = useState(false);
+  const [showAlertTypeMenu, setShowAlertTypeMenu] = useState(false);
+  const [showFromDate, setShowFromDate] = useState(false);
+  const [fromDate, setFromDate] = useState(new Date());
+  const [showToDate, setShowToDate] = useState(false);
+  const [toDate, setToDate] = useState(new Date());
+
+  const accountOptions = ['Account A', 'Account B', 'Account C'];
+  const vehicleOptions = ['Vehicle 1', 'Vehicle 2', 'Vehicle 3'];
+  const alertTypeOptions = ['Speed Alert', 'Geofence Alert', 'Battery Alert'];
 
   return (
-    <View style={styles.card}>
-      <View style={styles.accentStrip} />
-      <View style={styles.cardContent}>
-        <Text style={styles.label}>
-          Account Name: <Text style={styles.value}>{data.accountName}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Vehicle No: <Text style={styles.value}>{data.vehicleNo}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Latitude: <Text style={styles.value}>{data.latitude}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Longitude: <Text style={styles.value}>{data.longitude}</Text>
-        </Text>
+    <PaperProvider>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header */}
+        <View style={styles.headerBar}>
+          <Image
+            source={require('./assets/imz-logo.png')}
+            style={styles.logoImage}
+          />
+          <TouchableOpacity onPress={() => console.log('Menu pressed')}>
+            <Text style={styles.menuIcon}>☰</Text>
+          </TouchableOpacity>
+        </View>
 
-        {expanded && (
-          <View style={styles.extraInfo}>
-            <Text style={styles.label}>
-              Alert Time: <Text style={styles.value}>{data.alertTime}</Text>
-            </Text>
-            <Text style={styles.label}>
-              Source: <Text style={styles.value}>{data.source}</Text>
-            </Text>
-            <Text style={styles.label}>
-              Operate By: <Text style={styles.value}>{data.operateBy}</Text>
-            </Text>
-            <Text style={styles.label}>
-              Message: <Text style={styles.value}>{data.message}</Text>
-            </Text>
+        {/* Form Container */}
+        <View style={styles.formBox}>
+          <Text style={styles.heading}>Alert Logs</Text>
+          <Text style={styles.sectionTitle}>Select Filters</Text>
+
+          {/* Date Pickers */}
+          <View style={styles.row}>
+            <View style={styles.column}>
+              <Text style={styles.label}>From Date</Text>
+              <Button
+                // icon="calendar"
+                mode="outlined"
+                onPress={() => setShowFromDate(true)}
+                style={styles.dateButton}
+                labelStyle={styles.buttonLabel}
+              >
+                {fromDate.toDateString()}
+              </Button>
+              {showFromDate && (
+                <DateTimePicker
+                  value={fromDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(e, selectedDate) => {
+                    setShowFromDate(false);
+                    if (selectedDate) setFromDate(selectedDate);
+                  }}
+                />
+              )}
+            </View>
+
+            <View style={styles.column}>
+              <Text style={styles.label}>To Date</Text>
+              <Button
+                // icon="calendar"
+                mode="outlined"
+                onPress={() => setShowToDate(true)}
+                style={styles.dateButton}
+                labelStyle={styles.buttonLabel}
+              >
+                {toDate.toDateString()}
+              </Button>
+              {showToDate && (
+                <DateTimePicker
+                  value={toDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(e, selectedDate) => {
+                    setShowToDate(false);
+                    if (selectedDate) setToDate(selectedDate);
+                  }}
+                />
+              )}
+            </View>
           </View>
-        )}
 
-        <TouchableOpacity
-          onPress={() => setExpanded(!expanded)}
-          style={styles.viewMoreBtn}
-        >
-          <Text style={styles.viewMoreText}>
-            {expanded ? '▲ View Less' : '▼ View More'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          {/* Menus */}
+          <Text style={styles.label}>Select Account</Text>
+          <Menu
+            visible={showAccountMenu}
+            onDismiss={() => setShowAccountMenu(false)}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={() => setShowAccountMenu(true)}
+                style={styles.dropdown}
+                labelStyle={styles.dropdownLabel}
+              >
+                {account || 'Choose Account ▼'}
+              </Button>
+            }
+          >
+            {accountOptions.map((option, index) => (
+              <Menu.Item
+                key={index}
+                onPress={() => {
+                  setAccount(option);
+                  setShowAccountMenu(false);
+                }}
+                title={option}
+              />
+            ))}
+          </Menu>
+
+          <Text style={styles.label}>Select Vehicle</Text>
+          <Menu
+            visible={showVehicleMenu}
+            onDismiss={() => setShowVehicleMenu(false)}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={() => setShowVehicleMenu(true)}
+                style={styles.dropdown}
+                labelStyle={styles.dropdownLabel}
+              >
+                {vehicle || 'Choose Vehicle ▼'}
+              </Button>
+            }
+          >
+            {vehicleOptions.map((option, index) => (
+              <Menu.Item
+                key={index}
+                onPress={() => {
+                  setVehicle(option);
+                  setShowVehicleMenu(false);
+                }}
+                title={option}
+              />
+            ))}
+          </Menu>
+
+          <Text style={styles.label}>Select Alert Type</Text>
+          <Menu
+            visible={showAlertTypeMenu}
+            onDismiss={() => setShowAlertTypeMenu(false)}
+            anchor={
+              <Button
+                mode="outlined"
+                onPress={() => setShowAlertTypeMenu(true)}
+                style={styles.dropdown}
+                labelStyle={styles.dropdownLabel}
+              >
+                {alertType || 'Choose Alert Type ▼'}
+              </Button>
+            }
+          >
+            {alertTypeOptions.map((option, index) => (
+              <Menu.Item
+                key={index}
+                onPress={() => {
+                  setAlertType(option);
+                  setShowAlertTypeMenu(false);
+                }}
+                title={option}
+              />
+            ))}
+          </Menu>
+
+          {/* Submit */}
+          <Button mode="contained" style={styles.submitButton} onPress={() => console.log('Filters applied')}>
+            Apply Filters
+          </Button>
+        </View>
+      </ScrollView>
+    </PaperProvider>
   );
 };
 
-export default function App() {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const sampleData = Array.from({ length: 30 }, (_, index) => ({
-    accountName: `Account ${index + 1}`,
-    vehicleNo: `AB${index + 10}CD${3000 + index}`,
-    alertTime: `2025-06-08 10:${index < 10 ? '0' + index : index} AM`,
-    latitude: (28.70 + index * 0.01).toFixed(4),
-    longitude: (77.10 + index * 0.01).toFixed(4),
-    source: 'GPS',
-    operateBy: 'System',
-    message: 'Overspeeding detected',
-  }));
-
-  const totalPages = Math.ceil(sampleData.length / pageSize);
-  const paginatedData = sampleData.slice((page - 1) * pageSize, page * pageSize);
-
-  const handleNext = () => {
-    if (page < totalPages) setPage(page + 1);
-  };
-
-  const handlePrev = () => {
-    if (page > 1) setPage(page - 1);
-  };
-
-  const handlePageSizeChange = (value) => {
-    setPageSize(value);
-    setPage(1); // Reset to first page
-  };
-
-  return (
-    <SafeAreaView style={styles.fullScreen}>
-      
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Top Row: Menu and Dropdown */}
-       
-
-        <Text style={styles.heading}>Alert Log</Text>
-         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.exportBox}>
-            <Text style={styles.exportText} > ☰ Export Table Data</Text>
-          </TouchableOpacity>
-
-          <View style={styles.dropdownContainer}>
-            <Text style={styles.dropdownLabel}>Entries per page:</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={pageSize}
-                onValueChange={handlePageSizeChange}
-                mode="dropdown"
-                style={styles.picker}
-                itemStyle={styles.pickerItem}
-              >
-                <Picker.Item label="5" value={5} />
-                <Picker.Item label="10" value={10} />
-                <Picker.Item label="15" value={15} />
-                <Picker.Item label="20" value={20} />
-              </Picker>
-            </View>
-          </View>
-        </View>
-
-        {paginatedData.map((item, index) => (
-          <AlertCard key={index} data={item} />
-        ))}
-
-        <View style={styles.pagination}>
-          <TouchableOpacity
-            onPress={handlePrev}
-            disabled={page === 1}
-            style={styles.pageButton}
-          >
-            <Text
-              style={[
-                styles.pageButtonText,
-                page === 1 && styles.disabledText,
-              ]}
-            >
-              ◀ Prev
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.pageIndicator}>
-            Page {page} of {totalPages}
-          </Text>
-          <TouchableOpacity
-            onPress={handleNext}
-            disabled={page === totalPages}
-            style={styles.pageButton}
-          >
-            <Text
-              style={[
-                styles.pageButtonText,
-                page === totalPages && styles.disabledText,
-              ]}
-            >
-              Next ▶
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  fullScreen: {
-    flex: 1,
-    backgroundColor: '#f1f5f9',
-  },
   container: {
     padding: 16,
-    paddingBottom: 100,
+    backgroundColor: '#f8fafc',
+    paddingBottom: 50,
   },
-  topBar: {
+  headerBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
-  },
-  exportBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3b82f6',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  exportText: {
-    color: '#fff',
-    fontWeight: '600',
-    
-  },
-  dropdownContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e0f2fe',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  dropdownLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginRight: 6,
-    color: '#1e293b',
-  },
-  pickerWrapper: {
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    overflow: 'hidden',
-  },
-  picker: {
-    width: 80,
-    height: 30,
-  },
-  pickerItem: {
-    fontSize: 12,
-  },
-  heading: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
     marginBottom: 20,
-    elevation: 4,
+  },
+  logoImage: {
+    width: 120,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  menuIcon: {
+    fontSize: 24,
+    color: '#1e293b',
+  },
+  formBox: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    flexDirection: 'row',
-    overflow: 'hidden',
+    elevation: 4,
   },
-  accentStrip: {
-    width: 6,
-    backgroundColor: '#3b82f6',
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
+  heading: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: -25,
+    marginLeft:-240,
+    textAlign: 'center',
+    
   },
-  cardContent: {
-    flex: 1,
-    padding: 16,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#475569',
+    marginBottom: 16,
+    textAlign: 'center',
+    marginLeft:250,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#334155',
     marginBottom: 6,
+    marginTop: 12,
   },
-  value: {
-    fontWeight: '400',
-    color: '#475569',
-  },
-  extraInfo: {
-    marginTop: 4,
-    paddingTop: 6,
-  },
-  viewMoreBtn: {
-    marginTop: 8,
-    alignSelf: 'flex-start',
-    backgroundColor: '#e0f2fe',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  viewMoreText: {
-    color: '#0284c7',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  pagination: {
+  row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
-    alignItems: 'center',
+    gap: 16,
   },
-  pageButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  column: {
+    flex: 1,
   },
-  pageButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#3b82f6',
+  dateButton: {
+    borderColor: '#cbd5e1',
   },
-  disabledText: {
-    color: '#94a3b8',
-  },
-  pageIndicator: {
-    fontSize: 14,
-    fontWeight: '600',
+  buttonLabel: {
     color: '#1e293b',
   },
+  dropdown: {
+    borderColor: '#cbd5e1',
+    marginBottom: 8,
+  },
+  dropdownLabel: {
+    color: '#1e293b',
+  },
+  submitButton: {
+    marginTop: 20,
+    backgroundColor: '#3b82f6',
+  },
 });
+
+export default AlertLogsScreen;
