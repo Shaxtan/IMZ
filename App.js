@@ -3,10 +3,10 @@ import {
   View,
   StyleSheet,
   Text,
-  Image,
   Platform,
-  TouchableOpacity,
   ScrollView,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 import {
   Button,
@@ -14,8 +14,12 @@ import {
   Provider as PaperProvider,
 } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+// import { Ionicons } from '@expo/vector-icons'; // Optional: for nicer icons
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const AlertLogsScreen = () => {
+
+const AlertLogsPopup = ({ visible, onClose }) => {
   const [account, setAccount] = useState('');
   const [vehicle, setVehicle] = useState('');
   const [alertType, setAlertType] = useState('');
@@ -32,187 +36,196 @@ const AlertLogsScreen = () => {
   const alertTypeOptions = ['Speed Alert', 'Geofence Alert', 'Battery Alert'];
 
   return (
-    <PaperProvider>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
-        <View style={styles.headerBar}>
-          <Image
-            source={require('./assets/imz-logo.png')}
-            style={styles.logoImage}
-          />
-          <TouchableOpacity onPress={() => console.log('Menu pressed')}>
-            <Text style={styles.menuIcon}>☰</Text>
-          </TouchableOpacity>
-        </View>
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <PaperProvider>
+        <View style={styles.overlay}>
+          <View style={styles.popupContainer}>
+            {/* Header Close Icon */}
+            <View style={styles.closeWrapper}>
+              <TouchableOpacity onPress={onClose}>
+                {/* <Ionicons name="close" size={26} color="#334155" /> */}
+                {/* <MaterialIcons name="cancel" size={24} /> */}
+{/* <FontAwesome name="times" size={24} /> */}
 
-        {/* Form Container */}
-        <View style={styles.formBox}>
-          <Text style={styles.heading}>Alert Logs</Text>
-          <Text style={styles.sectionTitle}>Select Filters</Text>
-
-          {/* Date Pickers */}
-          <View style={styles.row}>
-            <View style={styles.column}>
-              <Text style={styles.label}>From Date</Text>
-              <Button
-                // icon="calendar"
-                mode="outlined"
-                onPress={() => setShowFromDate(true)}
-                style={styles.dateButton}
-                labelStyle={styles.buttonLabel}
-              >
-                {fromDate.toDateString()}
-              </Button>
-              {showFromDate && (
-                <DateTimePicker
-                  value={fromDate}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={(e, selectedDate) => {
-                    setShowFromDate(false);
-                    if (selectedDate) setFromDate(selectedDate);
-                  }}
-                />
-              )}
+              </TouchableOpacity>
             </View>
 
-            <View style={styles.column}>
-              <Text style={styles.label}>To Date</Text>
-              <Button
-                // icon="calendar"
-                mode="outlined"
-                onPress={() => setShowToDate(true)}
-                style={styles.dateButton}
-                labelStyle={styles.buttonLabel}
-              >
-                {toDate.toDateString()}
-              </Button>
-              {showToDate && (
-                <DateTimePicker
-                  value={toDate}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={(e, selectedDate) => {
-                    setShowToDate(false);
-                    if (selectedDate) setToDate(selectedDate);
-                  }}
-                />
-              )}
-            </View>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <View style={styles.formBox}>
+                <Text style={styles.heading}>Alert Logs</Text>
+                <Text style={styles.sectionTitle}>Select Filters</Text>
+
+                {/* From/To Date */}
+                <View style={styles.row}>
+                  <View style={styles.column}>
+                    <Text style={styles.label}>From Date</Text>
+                    <Button
+                      mode="outlined"
+                      onPress={() => setShowFromDate(true)}
+                      style={styles.dateButton}
+                      labelStyle={styles.buttonLabel}
+                    >
+                      {fromDate.toDateString()}
+                    </Button>
+                    {showFromDate && (
+                      <DateTimePicker
+                        value={fromDate}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={(e, selectedDate) => {
+                          setShowFromDate(false);
+                          if (selectedDate) setFromDate(selectedDate);
+                        }}
+                      />
+                    )}
+                  </View>
+
+                  <View style={styles.column}>
+                    <Text style={styles.label}>To Date</Text>
+                    <Button
+                      mode="outlined"
+                      onPress={() => setShowToDate(true)}
+                      style={styles.dateButton}
+                      labelStyle={styles.buttonLabel}
+                    >
+                      {toDate.toDateString()}
+                    </Button>
+                    {showToDate && (
+                      <DateTimePicker
+                        value={toDate}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={(e, selectedDate) => {
+                          setShowToDate(false);
+                          if (selectedDate) setToDate(selectedDate);
+                        }}
+                      />
+                    )}
+                  </View>
+                </View>
+
+                {/* Menus */}
+                <Text style={styles.label}>Select Account</Text>
+                <Menu
+                  visible={showAccountMenu}
+                  onDismiss={() => setShowAccountMenu(false)}
+                  anchor={
+                    <Button
+                      mode="outlined"
+                      onPress={() => setShowAccountMenu(true)}
+                      style={styles.dropdown}
+                      labelStyle={styles.dropdownLabel}
+                    >
+                      {account || 'Choose Account ▼'}
+                    </Button>
+                  }
+                >
+                  {accountOptions.map((option, index) => (
+                    <Menu.Item
+                      key={index}
+                      onPress={() => {
+                        setAccount(option);
+                        setShowAccountMenu(false);
+                      }}
+                      title={option}
+                    />
+                  ))}
+                </Menu>
+
+                <Text style={styles.label}>Select Vehicle</Text>
+                <Menu
+                  visible={showVehicleMenu}
+                  onDismiss={() => setShowVehicleMenu(false)}
+                  anchor={
+                    <Button
+                      mode="outlined"
+                      onPress={() => setShowVehicleMenu(true)}
+                      style={styles.dropdown}
+                      labelStyle={styles.dropdownLabel}
+                    >
+                      {vehicle || 'Choose Vehicle ▼'}
+                    </Button>
+                  }
+                >
+                  {vehicleOptions.map((option, index) => (
+                    <Menu.Item
+                      key={index}
+                      onPress={() => {
+                        setVehicle(option);
+                        setShowVehicleMenu(false);
+                      }}
+                      title={option}
+                    />
+                  ))}
+                </Menu>
+
+                <Text style={styles.label}>Select Alert Type</Text>
+                <Menu
+                  visible={showAlertTypeMenu}
+                  onDismiss={() => setShowAlertTypeMenu(false)}
+                  anchor={
+                    <Button
+                      mode="outlined"
+                      onPress={() => setShowAlertTypeMenu(true)}
+                      style={styles.dropdown}
+                      labelStyle={styles.dropdownLabel}
+                    >
+                      {alertType || 'Choose Alert Type ▼'}
+                    </Button>
+                  }
+                >
+                  {alertTypeOptions.map((option, index) => (
+                    <Menu.Item
+                      key={index}
+                      onPress={() => {
+                        setAlertType(option);
+                        setShowAlertTypeMenu(false);
+                      }}
+                      title={option}
+                    />
+                  ))}
+                </Menu>
+
+                <Button
+                  mode="contained"
+                  style={styles.submitButton}
+                  onPress={() => console.log('Filters applied')}
+                  labelStyle={{ fontWeight: '600' }}
+                >
+                  Apply Filters
+                </Button>
+              </View>
+            </ScrollView>
           </View>
-
-          {/* Menus */}
-          <Text style={styles.label}>Select Account</Text>
-          <Menu
-            visible={showAccountMenu}
-            onDismiss={() => setShowAccountMenu(false)}
-            anchor={
-              <Button
-                mode="outlined"
-                onPress={() => setShowAccountMenu(true)}
-                style={styles.dropdown}
-                labelStyle={styles.dropdownLabel}
-              >
-                {account || 'Choose Account ▼'}
-              </Button>
-            }
-          >
-            {accountOptions.map((option, index) => (
-              <Menu.Item
-                key={index}
-                onPress={() => {
-                  setAccount(option);
-                  setShowAccountMenu(false);
-                }}
-                title={option}
-              />
-            ))}
-          </Menu>
-
-          <Text style={styles.label}>Select Vehicle</Text>
-          <Menu
-            visible={showVehicleMenu}
-            onDismiss={() => setShowVehicleMenu(false)}
-            anchor={
-              <Button
-                mode="outlined"
-                onPress={() => setShowVehicleMenu(true)}
-                style={styles.dropdown}
-                labelStyle={styles.dropdownLabel}
-              >
-                {vehicle || 'Choose Vehicle ▼'}
-              </Button>
-            }
-          >
-            {vehicleOptions.map((option, index) => (
-              <Menu.Item
-                key={index}
-                onPress={() => {
-                  setVehicle(option);
-                  setShowVehicleMenu(false);
-                }}
-                title={option}
-              />
-            ))}
-          </Menu>
-
-          <Text style={styles.label}>Select Alert Type</Text>
-          <Menu
-            visible={showAlertTypeMenu}
-            onDismiss={() => setShowAlertTypeMenu(false)}
-            anchor={
-              <Button
-                mode="outlined"
-                onPress={() => setShowAlertTypeMenu(true)}
-                style={styles.dropdown}
-                labelStyle={styles.dropdownLabel}
-              >
-                {alertType || 'Choose Alert Type ▼'}
-              </Button>
-            }
-          >
-            {alertTypeOptions.map((option, index) => (
-              <Menu.Item
-                key={index}
-                onPress={() => {
-                  setAlertType(option);
-                  setShowAlertTypeMenu(false);
-                }}
-                title={option}
-              />
-            ))}
-          </Menu>
-
-          {/* Submit */}
-          <Button mode="contained" style={styles.submitButton} onPress={() => console.log('Filters applied')}>
-            Apply Filters
-          </Button>
         </View>
-      </ScrollView>
-    </PaperProvider>
+      </PaperProvider>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: '#f8fafc',
-    paddingBottom: 50,
-  },
-  headerBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  overlay: {
+    flex: 1,
+    // backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
-  logoImage: {
-    width: 120,
-    height: 40,
-    resizeMode: 'contain',
+  popupContainer: {
+    width: '92%',
+    height: '90%',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    overflow: 'hidden',
   },
-  menuIcon: {
-    fontSize: 24,
-    color: '#1e293b',
+  scrollContent: {
+    padding: 16,
+  },
+  closeWrapper: {
+    alignItems: 'flex-end',
+    padding: 12,
+    paddingRight: 20,
   },
   formBox: {
     backgroundColor: '#ffffff',
@@ -221,27 +234,27 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 4,
+    elevation: 5,
   },
   heading: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: -25,
-    marginLeft:-240,
     textAlign: 'center',
-    
+    marginBottom: 6,
+    marginLeft:-200,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '500',
     color: '#475569',
     marginBottom: 16,
     textAlign: 'center',
-    marginLeft:250,
+    marginRight:-200,
+    marginTop:-25,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#334155',
     marginBottom: 6,
@@ -250,7 +263,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 16,
+    gap: 12,
   },
   column: {
     flex: 1,
@@ -260,18 +273,22 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: '#1e293b',
+    fontSize: 14,
   },
   dropdown: {
     borderColor: '#cbd5e1',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   dropdownLabel: {
     color: '#1e293b',
+    fontSize: 14,
   },
   submitButton: {
-    marginTop: 20,
+    marginTop: 24,
     backgroundColor: '#3b82f6',
+    paddingVertical: 6,
+    borderRadius: 8,
   },
 });
 
-export default AlertLogsScreen;
+export default AlertLogsPopup;
